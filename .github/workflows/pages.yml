@@ -24,7 +24,7 @@ jobs:
       - name: Snapshot aviationweather.gov
         run: python3 tools/fetch_wx.py
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: .
       - id: deployment
