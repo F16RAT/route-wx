@@ -1,0 +1,19 @@
+name: Refresh FAA nav data (NASR)
+on:
+  schedule:
+    - cron: "17 9 * * 4"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  nav:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/build_nav.py /tmp/nasr
+      - name: Commit if the cycle changed
+        run: |
+          if git diff --quiet -- nav/points.json nav/airways.json nav/procs.json; then echo "no change"; exit 0; fi
+          git config user.name "route-wx bot"; git config user.email "actions@users.noreply.github.com"
+          git add nav && git commit -m "Nav data: NASR cycle $(python3 -c 'import json;print(json.load(open("nav/meta.json"))["nasr_cycle"])')" && git push

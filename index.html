@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RouteWx">
+<meta name="theme-color" content="#0b0f14">
+<title>RouteWx</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="map"></div>
+
+<header id="top">
+  <form id="routeForm" autocomplete="off">
+    <input id="routeIn" type="text" placeholder="Route: KDFW KPHX  or  KDFW AKUNA9 ABI J4 INK ELP SSO SUNSS8 KPHX" autocapitalize="characters" spellcheck="false">
+    <button type="submit" class="pri">Go</button>
+  </form>
+  <div class="row2">
+    <form id="fltForm" autocomplete="off">
+      <input id="fltIn" type="text" placeholder="Flight # (AAL1743)" autocapitalize="characters" spellcheck="false">
+      <button type="submit">Lookup</button>
+    </form>
+    <button id="recentBtn" type="button" title="Recent routes">Recent</button>
+  </div>
+</header>
+
+<div id="fabs">
+  <button id="playBtn" title="Play/pause radar">⏸</button>
+  <button id="layersBtn" title="Layers">☰</button>
+  <button id="locBtn" title="My location">◎</button>
+  <button id="setBtn" title="Settings">⚙</button>
+</div>
+
+<div id="radarTime"></div>
+<div id="dataAge"></div>
+
+<section id="sheet" class="collapsed">
+  <div id="sheetHandle"><span></span><b id="sheetTitle">Enter a route or flight number</b></div>
+  <div id="sheetBody"></div>
+</section>
+
+<div id="layersPanel" class="panel hidden">
+  <h3>Layers</h3>
+  <label><input type="checkbox" data-layer="radar" checked> Radar loop</label>
+  <label><input type="checkbox" data-layer="conv" checked> Convective SIGMETs</label>
+  <label><input type="checkbox" data-layer="sigmet" checked> SIGMETs / Intl SIGMETs</label>
+  <label><input type="checkbox" data-layer="gairmet" checked> G-AIRMETs</label>
+  <div class="sub">G-AIRMET hazards:
+    <label><input type="checkbox" data-ga="TURB-HI" checked> Turb hi</label>
+    <label><input type="checkbox" data-ga="TURB-LO" checked> Turb lo</label>
+    <label><input type="checkbox" data-ga="ICE" checked> Icing</label>
+    <label><input type="checkbox" data-ga="IFR"> IFR</label>
+    <label><input type="checkbox" data-ga="MT_OBSC"> Mtn obsc</label>
+    <label><input type="checkbox" data-ga="LLWS" checked> LLWS</label>
+    <label><input type="checkbox" data-ga="SFC_WND"> Sfc wind</label>
+    <label><input type="checkbox" data-ga="FZLVL"> Frz level</label>
+  </div>
+  <label>G-AIRMET time
+    <select id="gaHour"><option value="0">Now</option><option value="3">+3 h</option><option value="6">+6 h</option></select>
+  </label>
+  <label><input type="checkbox" data-layer="pirep" checked> PIREPs</label>
+  <label><input type="checkbox" data-layer="metar" checked> METAR flight category</label>
+  <button class="close">Done</button>
+</div>
+
+<div id="settingsPanel" class="panel hidden">
+  <h3>Settings</h3>
+  <label>Radar source
+    <select id="radarSrc"><option value="iem">NEXRAD (US, IEM) – 5-min, 50-min loop</option><option value="rv">RainViewer (global, zoom-limited)</option></select>
+  </label>
+  <label>Route corridor half-width (nm) <input id="corridor" type="number" min="5" max="100" step="5"></label>
+  <label>PIREP search radius (nm) <input id="pirepNm" type="number" min="10" max="150" step="10"></label>
+  <hr>
+  <p class="small"><b>FlightAware AeroAPI</b> (optional, for flight-number lookup). Key is stored only on this phone.
+  FlightAware does not allow direct browser calls (no CORS), so a small proxy is required. See README.</p>
+  <label>AeroAPI key <input id="faKey" type="password" autocomplete="off" placeholder="x-apikey"></label>
+  <label>CORS proxy URL <input id="proxy" type="url" placeholder="https://your-proxy.example/?url={url}"></label>
+  <p class="small">Use <code>{url}</code> where the encoded target URL goes; otherwise the URL is appended.</p>
+  <hr>
+  <p class="small" id="navInfo"></p>
+  <button id="clearRecent" type="button">Clear recent routes</button>
+  <button class="close">Done</button>
+</div>
+
+<div id="recentPanel" class="panel hidden">
+  <h3>Recent routes</h3>
+  <div id="recentList"></div>
+  <button class="close">Close</button>
+</div>
+
+<div id="toast" class="hidden"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="js/geo.js"></script>
+<script src="js/route.js"></script>
+<script src="js/hazards.js"></script>
+<script src="js/aeroapi.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
